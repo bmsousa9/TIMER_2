@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex, noimageindex, nofollow, nosnippet, noarchive">
+  <meta name="description" content="TIMER AULA TÉCNICA">
+  <meta name="keywords" content="HTML, CSS, JavaScript">
+  <meta name="author" content="Bruno Marques">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TIMER - BRUNO MARQUES</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Ropa+Sans&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: 'Ropa Sans', sans-serif;
+      color: #fff;
+      background: linear-gradient(120deg,#010a23, #0f1c3f, #6efffa, #010a23, #010a23);
+      background-size: 1000% 1000%;
+      animation: gradientCanvas 400s ease-in-out infinite;
+    }
+
+    @keyframes gradientCanvas {
+      0% { background-position: 0% 0%; }
+      25% { background-position: 50% 25%; }
+      50% { background-position: 100% 50%; }
+      75% { background-position: 50% 75%; }
+      100% { background-position: 0% 100%; }
+    }
+
+    #page {
+      padding: 5em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .title {
+      background-color: rgba(0, 0, 0, 0.5);
+      font-size: 2.2em;
+      padding: 10px 25px;
+      border-radius: 50px;
+    }
+
+    #message {
+      width: 100%;
+      font-size: 4em;
+      border: none;
+      padding-left: 10px;
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      box-sizing: border-box;
+      margin-top: 40px;
+    }
+
+    #options {
+      text-align: right;
+      padding-bottom: 10px;
+    }
+
+    .option {
+      color: #eee;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+
+    #timer-container {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    #setup {
+      margin-bottom: 20px;
+      transition: opacity 0.5s ease;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    #timeInput {
+      font-size: 1.2em;
+      padding: 10px;
+      width: 100px;
+      background-color: #fff;
+      color: #000;
+      border-radius: 50px;
+      border: none;
+    }
+
+    #startTimer {
+      font-size: 1.2em;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 50px;
+      border: none;
+      background-color: rgba(0,0,0,0.5);
+      color: #fff;
+    }
+
+    #progressContainer {
+      width: 40%;
+      height: 100px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 50px;
+      margin: 20px auto;
+      overflow: hidden;
+      position: relative;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #fff;
+      width: 100%;
+      transition: width 1s linear;
+    }
+
+    .progress-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #000;
+    }
+
+    #timerMessage {
+      font-size: 1.8em;
+      margin-top: 20px;
+      color: #fff;
+    }
+
+    iframe {
+      border: none;
+      width: 30%;
+      height: 18%;
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: -1;
+    }
+  </style>
+  <script>
+    function resizeText(multiplier) {
+      var elem = document.getElementById('message');
+      if (elem.style.fontSize === "") {
+        elem.style.fontSize = "4.0em";
+      }
+      elem.style.fontSize = parseFloat(elem.style.fontSize) + (multiplier * 0.2) + "em";
+    }
+
+    function toggleFullScreen() {
+      if (window.innerHeight === screen.height) {
+        document.exitFullscreen?.() || document.mozCancelFullScreen?.() || document.webkitExitFullscreen?.() || document.msExitFullscreen?.();
+      } else {
+        var elem = document.documentElement;
+        elem.requestFullscreen?.() || elem.mozRequestFullScreen?.() || elem.webkitRequestFullscreen?.() || elem.msRequestFullscreen?.();
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="page">
+    <div id="options">
+      <a class="option" href="#" onclick="resizeText(1);">[A+]</a>
+      <a class="option" href="#" onclick="resizeText(-1);">[A-]</a>
+      <a class="option" href="#" onclick="toggleFullScreen();">[Xx]</a>
+    </div>
+    <div class="title">O que está acontecendo?</div>
+    <textarea id="message" rows="3"></textarea>
+    <br>
+    <div class="title">Quanto tempo falta?</div>
+    <div id="timer-container">
+      <form id="setup">
+        <input type="number" id="timeInput" placeholder="Minutos" min="1" required>
+        <button type="submit" id="startTimer">Iniciar</button>
+      </form>
+      <div id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-text" id="progressText">0 minutos e 0 segundos</div>
+      </div>
+      <p id="timerMessage"></p>
+    </div>
+  </div>
+<!-- <iframe src="https://open.spotify.com/embed/playlist/7cOAdkkkTr1SC5KazjK8O7" allow="encrypted-media"></iframe>-->
+<!--  <iframe src="https://open.spotify.com/embed/playlist/5PQt2vWK0Gc7kjiMVIgSkO" allow="encrypted-media"></iframe>-->
+<iframe style="border-radius:12px" 
+  src="https://open.spotify.com/embed/playlist/7cOAdkkkTr1SC5KazjK8O7?utm_source=generator" 
+  width="100%" height="152" frameBorder="0" 
+  allow="encrypted-media" 
+  loading="lazy">
+</iframe>
+  
+
+  <script>
+    const setupForm = document.getElementById('setup');
+    const timeInputField = document.getElementById('timeInput');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const timerMessage = document.getElementById('timerMessage');
+    const progressContainer = document.getElementById('progressContainer');
+
+    let intervalId;
+    let totalTime = 0;
+    let timeRemaining = 0;
+
+    function formatTimeExtenso(totalSeconds) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      const minuteStr = minutes === 1 ? minutes + " minuto" : minutes + " minutos";
+      const secondStr = seconds === 1 ? seconds + " segundo" : seconds + " segundos";
+      return minuteStr + " e " + secondStr;
+    }
+
+    function updateTimer() {
+      const progressPercentage = (timeRemaining / totalTime) * 100;
+      progressBar.style.width = progressPercentage + '%';
+      progressText.textContent = formatTimeExtenso(timeRemaining);
+
+      if (timeRemaining <= 0) {
+        clearInterval(intervalId);
+        progressContainer.style.display = "none";
+        progressText.textContent = "";
+        timerMessage.textContent = "Iniciaremos em instantes 🚀";
+      } else {
+        timeRemaining--;
+      }
+    }
+
+    setupForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const minutesValue = parseInt(timeInputField.value);
+      if (isNaN(minutesValue) || minutesValue <= 0) {
+        alert("Por favor, informe um número de minutos maior que zero.");
+        return;
+      }
+
+      totalTime = minutesValue * 60;
+      timeRemaining = totalTime;
+
+      setupForm.style.opacity = "0";
+      setTimeout(function() {
+        setupForm.style.display = "none";
+        progressContainer.style.display = "block";
+        progressContainer.offsetHeight;
+        progressContainer.style.opacity = "1";
+      }, 500);
+
+      timerMessage.textContent = "";
+      updateTimer();
+      intervalId = setInterval(updateTimer, 1000);
+    });
+  </script>
+</body>
+</html>
