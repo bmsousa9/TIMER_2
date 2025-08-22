@@ -1,16 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="robots" content="noindex, noimageindex, nofollow, nosnippet, noarchive">
-  <meta name="description" content="TIMER AULA TÉCNICA">
-  <meta name="keywords" content="HTML, CSS, JavaScript">
-  <meta name="author" content="Bruno Marques">
-  <meta name="prestige" content="Eduardo Lara">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TIMER IA 2.0 - BRUNO MARQUES</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Ropa+Sans&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TIMER IA 3.0 - BRUNO MARQUES</title>
+  <link href="https://fonts.googleapis.com/css2?family=Ropa+Sans&display=swap" rel="stylesheet"/>
   <style>
     body {
       margin: 0;
@@ -150,26 +144,69 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 5;
-    }
-  </style>
-  <script>
-    function resizeText(multiplier) {
-      var elem = document.getElementById('message');
-      if (elem.style.fontSize === "") {
-        elem.style.fontSize = "4.0em";
-      }
-      elem.style.fontSize = parseFloat(elem.style.fontSize) + (multiplier * 0.2) + "em";
+      border-radius: 12px;
     }
 
-    function toggleFullScreen() {
-      if (window.innerHeight === screen.height) {
-        document.exitFullscreen?.() || document.mozCancelFullScreen?.() || document.webkitExitFullscreen?.() || document.msExitFullscreen?.();
-      } else {
-        var elem = document.documentElement;
-        elem.requestFullscreen?.() || elem.mozRequestFullScreen?.() || elem.webkitRequestFullscreen?.() || elem.msRequestFullscreen?.();
-      }
+    #playlistControls {
+      position: fixed;
+      bottom: 22%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 6;
+      text-align: center;
     }
-  </script>
+
+    #addPlaylistBtn {
+      font-size: 1em;
+      padding: 8px 16px;
+      border-radius: 50px;
+      border: none;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    /* Modal */
+    #modalOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    #modalContent {
+      background: #0f1c3f;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      width: 400px;
+    }
+
+    #playlistInput {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 10px;
+      font-size: 1em;
+    }
+
+    #confirmBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      background-color: #17065a;
+      color: #fff;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <div id="page">
@@ -178,13 +215,14 @@
       <a class="option" href="#" onclick="resizeText(-1);">[A-]</a>
       <a class="option" href="#" onclick="toggleFullScreen();">[Xx]</a>
     </div>
+
     <div class="title">O que está acontecendo?</div>
     <textarea id="message" rows="3"></textarea>
-    <br>
+
     <div class="title">Quanto tempo falta?</div>
     <div id="timer-container">
       <form id="setup">
-        <input type="number" id="timeInput" placeholder="Minutos" min="1" required>
+        <input type="number" id="timeInput" placeholder="Minutos" min="1" required />
         <button type="submit" id="startTimer">Iniciar</button>
       </form>
       <div id="progressContainer">
@@ -194,17 +232,44 @@
       <p id="timerMessage"></p>
     </div>
   </div>
-<!-- <iframe src="https://open.spotify.com/embed/playlist/7cOAdkkkTr1SC5KazjK8O7" allow="encrypted-media"></iframe>-->
-<!--  <iframe src="https://open.spotify.com/embed/playlist/5PQt2vWK0Gc7kjiMVIgSkO" allow="encrypted-media"></iframe>-->
-<iframe style="border-radius:12px" 
-  src="https://open.spotify.com/embed/playlist/7cOAdkkkTr1SC5KazjK8O7?utm_source=generator" 
-  width="100%" height="152" frameBorder="0" 
-  allow="encrypted-media" 
-  loading="lazy">
-</iframe>
-  
+
+  <!-- Botão acima da playlist -->
+  <div id="playlistControls">
+    <button id="addPlaylistBtn">Adicionar Playlist</button>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalOverlay">
+    <div id="modalContent">
+      <p>Cole o link da playlist do Spotify:</p>
+      <input type="text" id="playlistInput" placeholder="https://open.spotify.com/playlist/..." />
+      <button id="confirmBtn">Confirmar</button>
+    </div>
+  </div>
+
+  <!-- Playlist no rodapé -->
+  <iframe id="playlistFrame"
+    src="https://open.spotify.com/embed/playlist/7cOAdkkkTr1SC5KazjK8O7?utm_source=generator"
+    allow="encrypted-media" loading="lazy">
+  </iframe>
 
   <script>
+    function resizeText(multiplier) {
+      const elem = document.getElementById('message');
+      if (elem.style.fontSize === "") {
+        elem.style.fontSize = "4.0em";
+      }
+      elem.style.fontSize = parseFloat(elem.style.fontSize) + (multiplier * 0.2) + "em";
+    }
+
+    function toggleFullScreen() {
+      if (window.innerHeight === screen.height) {
+        document.exitFullscreen?.();
+      } else {
+        document.documentElement.requestFullscreen?.();
+      }
+    }
+
     const setupForm = document.getElementById('setup');
     const timeInputField = document.getElementById('timeInput');
     const progressBar = document.getElementById('progressBar');
@@ -219,9 +284,7 @@
     function formatTimeExtenso(totalSeconds) {
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
-      const minuteStr = minutes === 1 ? minutes + " minuto" : minutes + " minutos";
-      const secondStr = seconds === 1 ? seconds + " segundo" : seconds + " segundos";
-      return minuteStr + " e " + secondStr;
+      return `${minutes} minuto${minutes !== 1 ? 's' : ''} e ${seconds} segundo${seconds !== 1 ? 's' : ''}`;
     }
 
     function updateTimer() {
@@ -243,29 +306,53 @@
       event.preventDefault();
       const minutesValue = parseInt(timeInputField.value);
       if (isNaN(minutesValue) || minutesValue <= 0) {
-        alert("Por favor, informe um número de minutos maior que zero.");
+        alert("Por favor, insira um número válido de minutos.");
         return;
       }
 
       totalTime = minutesValue * 60;
       timeRemaining = totalTime;
 
-      setupForm.style.opacity = "0";
-      setTimeout(function() {
-        setupForm.style.display = "none";
-        progressContainer.style.display = "block";
-        progressContainer.offsetHeight;
-        progressContainer.style.opacity = "1";
-      }, 500);
+      setupForm.style.display = "none";
+      progressContainer.style.display = "block";
+      progressContainer.style.opacity = "1";
 
       timerMessage.textContent = "";
       updateTimer();
       intervalId = setInterval(updateTimer, 1000);
     });
+
+    // Modal de adicionar playlist
+    const addPlaylistBtn = document.getElementById('addPlaylistBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const playlistInput = document.getElementById('playlistInput');
+    const playlistFrame = document.getElementById('playlistFrame');
+
+    addPlaylistBtn.addEventListener('click', () => {
+      modalOverlay.style.display = "flex";
+      playlistInput.value = "";
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      const rawLink = playlistInput.value.trim();
+      const match = rawLink.match(/playlist\/([a-zA-Z0-9]+)(\?|$)/);
+      if (match && match[1]) {
+        const playlistId = match[1];
+        const embedLink = `https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator`;
+        playlistFrame.setAttribute("src", embedLink);
+        modalOverlay.style.display = "none";
+      } else {
+        alert("Link inválido. Cole um link de playlist do Spotify.");
+      }
+    });
+
+    // Fecha modal ao clicar fora
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.style.display = "none";
+      }
+    });
   </script>
 </body>
-
 </html>
-
-
-
